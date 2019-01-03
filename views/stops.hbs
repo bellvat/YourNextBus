@@ -1,0 +1,29 @@
+<html>
+<body>
+	<h1>Find Your Next Bus!</h1>
+	<p>Please select your route below</p>
+	<p>Serving LA area, specifically LA Metro</p>
+	<form method="get" action="/stops">
+		<select name="route_selected">
+	{{#each route}}
+			<option value={{this.route_number}}>{{this.route_name}}</option>
+	{{/each}}
+		</select>
+		<button value="Submit">Submit</button> 
+	</form>
+	<h2>Route: {{selected}}</h2>
+	<h2>Directions -></h2>
+	<form method="get" action="#">
+		<select name="stop_selected">
+		{{#each stops}}
+			<option value={{this.id}}>{{this.display_name}}</option>
+		{{/each}}
+		</select>
+	</form>
+	<h2>Directions <-</h2>
+	{{directions}}
+	{{#each directions}}
+		<p> {{this.title}}</p>
+	{{/each}}
+</body>
+</html>
