@@ -11,8 +11,17 @@
 		</select>
 		<button value="Submit">Submit</button> 
 	</form>
-	<h2>Route: {{selected}}</h2>
+	<h2>Route: {{routeSelected}}</h2>
 	<h2>Directions -></h2>
+	<form method="get" action="/stops">
+		<select name="direction_selected">
+		{{#each directions}}
+			<option value="{{@index}}">{{this._attributes.title}}</option>
+		{{/each}}
+		</select>
+	</form>
+	<!--whatever option, the stops should populate using an if statement, because all data is contained in the directions object-->
+	<h2>Stops</h2>
 	<form method="get" action="#">
 		<select name="stop_selected">
 		{{#each stops}}
@@ -20,10 +29,5 @@
 		{{/each}}
 		</select>
 	</form>
-	<h2>Directions <-</h2>
-	{{directions}}
-	{{#each directions}}
-		<p> {{this.title}}</p>
-	{{/each}}
 </body>
 </html>

@@ -2,7 +2,6 @@
 const express = require('express');
 const hbs = require('hbs');
 const mongoose = require('mongoose');
-const {Bus} = require('./model/bus-store.js');
 const request = require('request');
 const requestPromise = require('request-promise');
 const bodyParser = require('body-parser');
@@ -23,28 +22,14 @@ app.get('/',(req,res)=>{
 
 app.get('/stops',(req,res)=>{
 	var routeSelected = req.query.route_selected;
-	var directionSelected = parseInt(req.query.direction_selected);
 	var stops = "";
 	var directions = "";
 	requestPromise({
 		uri: "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=lametro&r=" + routeSelected + "&terse"})
 		.then((resp)=>{
 			var data = convert.xml2json(resp,{compact:true});	
-			var dataJson = JSON.parse(data);
-			//xml
-			var tagStopsArray = dataJson.body.route.direction[directionSelected];
-			//make request to LA metro api to get the names and match tagStopsArray stop tags -- would this be easier in Sql? -- is this a good idea to nest get requests?	
-
 			//stops = JSON.parse(resp);
-			Bus.find().then((routes)=>{
-				res.render('stops.hbs',{
-					route: routes,
-					routeSelected: routeSelected,
-					directions:dataJson.body.route.direction, 
-					directionSelected: directionSelected,
-					stops: stops.items
-				})
-			})
+			res.send(JSON.parse(data).body.route.direction)
 		})
 		.catch((err)=>{
 			res.send(err);
