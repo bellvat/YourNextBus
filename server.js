@@ -38,9 +38,14 @@ app.get('/stops',(req,res)=>{
 			for(var i = 0;i < allRoutes.length;i++){
 				tagObj[allRoutes[i]._attributes.tag] = allRoutes[i];
 			}
-			var stopsList = [];
+			var stopsList = []; 
 			for(stop in tagStopsArray){
-				//add to list
+				//make a list of stop names and ids here, instead of doing that in the views
+				var each = {
+				'stopId' : tagObj[tagStopsArray[stop]._attributes.tag]._attributes.stopId,
+				 'stopTitle' : tagObj[tagStopsArray[stop]._attributes.tag]._attributes.title
+				}
+				stopsList.push(each);
 			}
 			//make request to LA metro api to get the names and match tagStopsArray stop tags -- would this be easier in Sql? -- is this a good idea to nest get requests?	I would need filter only the results that match tagStopArray
 
@@ -52,7 +57,7 @@ app.get('/stops',(req,res)=>{
 					routeSelected: routeSelected,
 					directions:dataJson.body.route.direction, 
 					stopsAvailable: tagStopsArray,
-					allRoutes:tagObj 
+					stopsList:stopsList 
 				})
 			})
 		})

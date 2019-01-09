@@ -22,8 +22,8 @@
 	<h2>Stops</h2>
 	<form method="get" action="#">
 		<select name="stop_selected">
-		{{#each stopsAvailable}}
-			<option value={{tagObj.{{this._attributes.tag}}._attributes.stopId}}>{{tagObj.{{this._attributes.tag}}._attributes.title}}</option>
+		{{#each stopsList}}
+			<option value={{this.stopId}}>{{this.stopTitle}}</option>
 		{{/each}}
 		</select>
 	</form>
