@@ -32,8 +32,18 @@ app.get('/stops',(req,res)=>{
 			var data = convert.xml2json(resp,{compact:true});	
 			var dataJson = JSON.parse(data);
 			//xml
-			var tagStopsArray = dataJson.body.route.direction[directionSelected];
-			//make request to LA metro api to get the names and match tagStopsArray stop tags -- would this be easier in Sql? -- is this a good idea to nest get requests?	
+			var tagStopsArray = dataJson.body.route.direction[directionSelected].stop;
+			var allRoutes = dataJson.body.route.stop;
+			var tagObj = {};
+			for(var i = 0;i < allRoutes.length;i++){
+				tagObj[allRoutes[i]._attributes.tag] = allRoutes[i];
+			}
+			var stopsList = [];
+			for(stop in tagStopsArray){
+				//add to list
+			}
+			//make request to LA metro api to get the names and match tagStopsArray stop tags -- would this be easier in Sql? -- is this a good idea to nest get requests?	I would need filter only the results that match tagStopArray
+
 
 			//stops = JSON.parse(resp);
 			Bus.find().then((routes)=>{
@@ -41,8 +51,8 @@ app.get('/stops',(req,res)=>{
 					route: routes,
 					routeSelected: routeSelected,
 					directions:dataJson.body.route.direction, 
-					directionSelected: directionSelected,
-					stops: stops.items
+					stopsAvailable: tagStopsArray,
+					allRoutes:tagObj 
 				})
 			})
 		})

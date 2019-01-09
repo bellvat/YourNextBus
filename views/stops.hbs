@@ -9,23 +9,21 @@
 			<option value={{this.route_number}}>{{this.route_name}}</option>
 	{{/each}}
 		</select>
-		<button value="Submit">Submit</button> 
-	</form>
 	<h2>Route: {{routeSelected}}</h2>
 	<h2>Directions -></h2>
-	<form method="get" action="/stops">
 		<select name="direction_selected">
 		{{#each directions}}
 			<option value="{{@index}}">{{this._attributes.title}}</option>
 		{{/each}}
 		</select>
+		<button value="Submit">Submit</button> 
 	</form>
 	<!--whatever option, the stops should populate using an if statement, because all data is contained in the directions object-->
 	<h2>Stops</h2>
 	<form method="get" action="#">
 		<select name="stop_selected">
-		{{#each stops}}
-			<option value={{this.id}}>{{this.display_name}}</option>
+		{{#each stopsAvailable}}
+			<option value={{tagObj.{{this._attributes.tag}}._attributes.stopId}}>{{tagObj.{{this._attributes.tag}}._attributes.title}}</option>
 		{{/each}}
 		</select>
 	</form>

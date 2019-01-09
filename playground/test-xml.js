@@ -29,7 +29,7 @@ app.get('/stops',(req,res)=>{
 		.then((resp)=>{
 			var data = convert.xml2json(resp,{compact:true});	
 			//stops = JSON.parse(resp);
-			res.send(JSON.parse(data).body.route.direction)
+			res.send(JSON.parse(data).body.route)
 		})
 		.catch((err)=>{
 			res.send(err);
