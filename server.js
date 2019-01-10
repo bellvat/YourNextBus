@@ -7,6 +7,8 @@ const request = require('request');
 const requestPromise = require('request-promise');
 const bodyParser = require('body-parser');
 const convert = require('xml-js');
+const NodeCache = require('node-cache');
+const myCache = new NodeCache();
 
 var app = express()
 
@@ -20,12 +22,36 @@ app.get('/',(req,res)=>{
 		})
 	})
 });
-
+app.get('/next-stops',(req,res)=>{
+	var stopSelected = req.query.stop_selected
+	var routeSelected;
+	myCache.get('routeKey',(err,value)=>{
+		if(!err){
+			routeSelected = value;
+		}
+	})
+	requestPromise({
+		url: "http://api.metro.net/agencies/lametro/routes/" + routeSelected + "/stops/" + stopSelected +"/predictions/"
+	})
+	.then((resp)=>{
+		res.render('next-stops.hbs',{
+			routeSelected: routeSelected,
+			stopSelected: stopSelected,
+			displayedTimes: JSON.parse(resp).items
+		})
+	})
+	.catch((err)=>{
+		res.send(err);
+	})
+})
 app.get('/stops',(req,res)=>{
 	var routeSelected = req.query.route_selected;
+	myCache.set('routeKey',routeSelected);
 	var directionSelected = parseInt(req.query.direction_selected);
 	var stops = "";
 	var directions = "";
+	//below are 2 different submits
+	var submitDirection = req.query.submitDirection
 	requestPromise({
 		uri: "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=lametro&r=" + routeSelected + "&terse"})
 		.then((resp)=>{

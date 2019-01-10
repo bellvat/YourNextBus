@@ -16,16 +16,17 @@
 			<option value="{{@index}}">{{this._attributes.title}}</option>
 		{{/each}}
 		</select>
-		<button value="Submit">Submit</button> 
-	</form>
+		<button type="Submit" name="submitDirection" value="submitDirection">Submit Direction</button> 
+		</form>
 	<!--whatever option, the stops should populate using an if statement, because all data is contained in the directions object-->
 	<h2>Stops</h2>
-	<form method="get" action="#">
+	<form method="get" action="/next-stops">
 		<select name="stop_selected">
 		{{#each stopsList}}
 			<option value={{this.stopId}}>{{this.stopTitle}}</option>
 		{{/each}}
 		</select>
+		<button type="Submit" name="submitStop" value="submitStop">Submit Stop</button> 
 	</form>
 </body>
 </html>
