@@ -46,7 +46,7 @@ app.get('/next-stops',(req,res)=>{
 })
 
 function parseReq(req,key){
-	req.query[key];
+	return req.query[key];
 }
 
 function buildStopsObj(routeDetailsJs){
@@ -56,17 +56,20 @@ function buildStopsObj(routeDetailsJs){
 	for(var i = 0;i < allStops.length;i++){
 		stopsObj[allStops[i]._attributes.tag] = allStops[i];
 	}
+	return stopsObj;
 }
 function buildStopArray(routeDetailsJs,tagStopArray){
 	var stopsTagToNameObj = buildStopsObj(routeDetailsJs);
+	var arr = [];
 	for(var i = 0;i < tagStopArray.length;i++){
 		//make a list of stop names and ids here, instead of doing that in the views
 		var each = {
 		'stopId' : stopsTagToNameObj[tagStopsArray[i]._attributes.tag]._attributes.stopId,
 		 'stopTitle' : stopsTagToNameObj[tagStopsArray[i]._attributes.tag]._attributes.title
 		}
-		stopsList.push(each);
+		arr.push(each);
 	}
+	return arr;
 }
 app.get('/stops',(req,res)=>{
 
@@ -82,7 +85,7 @@ app.get('/stops',(req,res)=>{
 			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
 			var directionArray = routeStopDetailJs.body.route.direction;
 			var tagStopsArray = routeStopDetailJs.body.route.direction[directionSelected].stop;
-			var stopsList = buildStopArray(routeDetailsJs,tagStopArray);
+			var stopsList = buildStopArray(routeStopDetailsJs,tagStopsArray);
 			Bus.find().then((routes)=>{
 				res.render('stops.hbs',{
 					route: routes,
