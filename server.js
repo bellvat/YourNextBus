@@ -15,40 +15,10 @@ var app = express()
 app.set('view engine','hbs');
 app.use(bodyParser.json());
 
-app.get('/',(req,res)=>{
-	Bus.find().then((routes)=>{
-		res.render('home.hbs',{
-			route: routes
-		})
-	})
-});
-app.get('/next-stops',(req,res)=>{
-	var stopSelected = req.query.stop_selected
-	var routeSelected;
-	myCache.get('routeKey',(err,value)=>{
-		if(!err){
-			routeSelected = value;
-		}
-	})
-	requestPromise({
-		url: "http://api.metro.net/agencies/lametro/routes/" + routeSelected + "/stops/" + stopSelected +"/predictions/"
-	})
-	.then((resp)=>{
-		res.render('next-stops.hbs',{
-			routeSelected: routeSelected,
-			stopSelected: stopSelected,
-			displayedTimes: JSON.parse(resp).items
-		})
-	})
-	.catch((err)=>{
-		res.send(err);
-	})
-})
 
 function parseReq(req,key){
 	return req.query[key];
 }
-
 function buildStopsObj(routeDetailsJs){
 	//map the stop tag number to the stop name
 	var allStops = routeDetailsJs.body.route.stop;
@@ -74,6 +44,60 @@ function buildStopArray(routeDetailsJs,tagStopArray){
 	}
 	return arr;
 }
+
+//home i want to be able to submit the route and direction, then send the user to the /stops page
+app.get('/home',(req,res)=>{
+	var routeSelected = parseReq(req,"route_selected");
+	var directionSelected = parseInt(parseReq(req,"direction_selected"));
+	var submitDirection = parseReq(req,"submitDirection");
+
+	myCache.set('routeKey',routeSelected);
+
+	requestPromise({
+		uri: "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=lametro&r=" + routeSelected + "&terse"})
+		.then((resp)=>{
+			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
+			var directionArray = routeStopDetailJs.body.route.direction;
+			var tagStopsArray = routeStopDetailJs.body.route.direction[directionSelected].stop;
+			var stopsList = buildStopArray(routeStopDetailJs,tagStopsArray);
+			Bus.find().then((routes)=>{
+				res.render('stops.hbs',{
+					route: routes,
+					routeSelected: routeSelected,
+					directions:directionArray, 
+					stopsList:stopsList 
+				})
+			})
+		})
+		.catch((err)=>{
+			res.send(err);
+		})
+});
+app.get('/show-next-stops',(req,res)=>{
+	var stopSelected = parseReq(req,"stop_selected");
+	var routeSelected;
+	//need to show route name somehow
+	myCache.get('routeKey',(err,value)=>{
+		if(!err){
+			routeSelected = value;
+		}
+	})
+	requestPromise({
+		url: "http://api.metro.net/agencies/lametro/routes/" + routeSelected + "/stops/" + stopSelected +"/predictions/"
+	})
+	.then((resp)=>{
+		res.render('show-next-stops.hbs',{
+			routeSelected: routeSelected,
+			stopSelected: stopSelected,
+			displayedTimes: JSON.parse(resp).items
+		})
+	})
+	.catch((err)=>{
+		res.send(err);
+	})
+})
+
+
 app.get('/stops',(req,res)=>{
 
 	var routeSelected = parseReq(req,"route_selected");

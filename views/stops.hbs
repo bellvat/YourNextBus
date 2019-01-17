@@ -20,7 +20,7 @@
 		</form>
 	<!--whatever option, the stops should populate using an if statement, because all data is contained in the directions object-->
 	<h2>Stops</h2>
-	<form method="get" action="/next-stops">
+	<form method="get" action="/show-next-stops">
 		<select name="stop_selected">
 		{{#each stopsList}}
 			<option value={{this.stopId}}>{{this.stopTitle}}</option>
