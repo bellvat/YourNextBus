@@ -3,22 +3,8 @@
 	<h1>Find Your Next Bus!</h1>
 	<p>Please select your route below</p>
 	<p>Serving LA area, specifically LA Metro</p>
-	<form method="get" action="/stops">
-		<select name="route_selected">
-	{{#each route}}
-			<option value={{this.route_number}}>{{this.route_name}}</option>
-	{{/each}}
-		</select>
 	<h2>Route: {{routeSelected}}</h2>
-	<h2>Directions -></h2>
-		<select name="direction_selected">
-		{{#each directions}}
-			<option value="{{@index}}">{{this._attributes.title}}</option>
-		{{/each}}
-		</select>
-		<button type="Submit" name="submitDirection" value="submitDirection">Submit Direction</button> 
-		</form>
-	<!--whatever option, the stops should populate using an if statement, because all data is contained in the directions object-->
+	<h2>Direction: Direction Selected </h2>
 	<h2>Stops</h2>
 	<form method="get" action="/show-next-stops">
 		<select name="stop_selected">

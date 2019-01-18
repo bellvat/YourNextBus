@@ -3,8 +3,8 @@
 	<h1>Find Your Next Bus!</h1>
 	<p>Please select your route below</p>
 	<p>Serving LA area, specifically LA Metro</p>
-	<form method="get" action="/stops">
-		<select value="route_selected">
+	<form method="get" action="/direction">
+		<select name="route_selected">
 	{{#each route}}
 			<option value={{this.route_number}}>{{this.route_name}}</option>
 	{{/each}}
