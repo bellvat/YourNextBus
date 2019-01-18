@@ -8,7 +8,7 @@
 	<form method="get" action="/stops">
 		<select name="direction_selected">
 		{{#each directions}}
-			<option value="{{@index}}">{{this._attributes.title}}</option>
+			<option value="{{{json "direction_num" @index "direction_name" this._attributes.title}}}">{{this._attributes.title}}</option>
 		{{/each}}
 		</select>
 		<button type="Submit" name="submitDirection" value="submitDirection">Submit Direction</button> 

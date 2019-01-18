@@ -14,7 +14,11 @@ var app = express()
 
 app.set('view engine','hbs');
 app.use(bodyParser.json());
-
+hbs.registerHelper('json',(keyOne,valueOne, keyTwo, valueTwo)=>{
+	return new hbs.SafeString(
+		"{'" + keyOne + "':" + valueOne + ",'" + keyTwo + "':" + valueTwo + "}"
+	);
+})
 
 function parseReq(req,key){
 	return req.query[key];
@@ -82,7 +86,9 @@ app.get('/stops',(req,res)=>{
 			return value;
 		}
 	});
-	var directionSelected = parseInt(parseReq(req,"direction_selected"));
+//	var directionSelected = parseInt(JSON.parse(parseReq(req,"direction_selected")).direction_num);
+	var ex = JSON.parse(JSON.stringify(parseReq(req,"direction_selected")));
+	console.log(ex['direction_num']);
 
 	requestPromise({
 		uri: "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=lametro&r=" + routeSelected + "&terse"})
