@@ -4,12 +4,12 @@
 	<p>Please select your route below</p>
 	<p>Serving LA area, specifically LA Metro</p>
 	<h2>Route: {{routeSelected}}</h2>
-	<h2>Direction: Direction Selected </h2>
+	<h2>Direction: {{directionSelected}} </h2>
 	<h2>Stops</h2>
 	<form method="get" action="/show-next-stops">
 		<select name="stop_selected">
 		{{#each stopsList}}
-			<option value={{this.stopId}}>{{this.stopTitle}}</option>
+			<option value='{{this.json}}>{{this.name}}</option>
 		{{/each}}
 		</select>
 		<button type="Submit" name="submitStop" value="submitStop">Submit Stop</button> 

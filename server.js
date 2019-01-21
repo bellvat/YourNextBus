@@ -14,10 +14,9 @@ var app = express()
 
 app.set('view engine','hbs');
 app.use(bodyParser.json());
-hbs.registerHelper('json',(keyOne,valueOne, keyTwo, valueTwo)=>{
-	return new hbs.SafeString(
-		"{'" + keyOne + "':" + valueOne + ",'" + keyTwo + "':" + valueTwo + "}"
-	);
+hbs.registerHelper('json',(index)=>{
+	var obj = { keyOne: index + 1, keyTwo: this._attributes.title };
+	return JSON.stringify(obj);
 })
 
 function parseReq(req,key){
@@ -67,10 +66,23 @@ app.get('/direction',(req,res)=>{
 		.then((resp)=>{
 			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
 			var directionArray = routeStopDetailJs.body.route.direction;
+			var directionJson = [];
+			for(var i = 0;i< directionArray.length;i++){
+				var b = {
+					"direction_num": i.toString(),
+					"direction_name": directionArray[i]._attributes.title
+				}
+				var directionArr = {};
+				directionArr.json = JSON.stringify(b);
+				directionArr.name = directionArray[i]._attributes.title;
+				directionJson.push(directionArr);
+				
+			}
 			
 			res.render('direction.hbs',{
 				routeSelected: routeSelected,
-				directions:directionArray, 
+				directions:directionJson, 
+				directionArray: directionArray
 			})
 		})
 		.catch((err)=>{
@@ -86,19 +98,31 @@ app.get('/stops',(req,res)=>{
 			return value;
 		}
 	});
-//	var directionSelected = parseInt(JSON.parse(parseReq(req,"direction_selected")).direction_num);
-	var ex = JSON.parse(JSON.stringify(parseReq(req,"direction_selected")));
-	console.log(ex['direction_num']);
+	var directionSelectedNum = parseInt(JSON.parse(parseReq(req,"direction_selected")).direction_num);
+	var directionSelectedName = JSON.parse(parseReq(req,"direction_selected")).direction_name;
 
 	requestPromise({
 		uri: "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=lametro&r=" + routeSelected + "&terse"})
 		.then((resp)=>{
 			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
-			var tagStopsArray = routeStopDetailJs.body.route.direction[directionSelected].stop;
+			var tagStopsArray = routeStopDetailJs.body.route.direction[directionSelectedNum].stop;
 			var stopsList = buildStopArray(routeStopDetailJs,tagStopsArray);
+			var stopsArray = [];
+			for(var i = 0;i< stopsList.length;i++){
+				var b = {
+					"stop_num": stopsList[i].stopId,
+					"stop_name": stopsList[i].stopTitle
+				}
+				var stopsJson = {};
+				stopsJson.json = JSON.stringify(b);
+				stopsJson.name = stopsList[i].stopTitle;
+				stopsArray.push(stopsJson);
+				
+			}
 			res.render('stops.hbs',{
 				routeSelected: routeSelected,
-				stopsList:stopsList 
+				directionSelected: directionSelectedName,
+				stopsList:stopsArray 
 			})
 		})
 		.catch((err)=>{
