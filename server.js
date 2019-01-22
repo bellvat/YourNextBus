@@ -131,7 +131,8 @@ app.get('/stops',(req,res)=>{
 });
 
 app.get('/show-next-stops',(req,res)=>{
-	var stopSelected = parseReq(req,"stop_selected");
+	var stopSelected = JSON.parse(parseReq(req,"stop_selected")).stop_num;
+	var stopName = JSON.parse(parseReq(req,"stop_selected")).stop_name;
 	var routeSelected = myCache.get('routeKey',(err,value)=>{
 		if(!err){
 			return value;
@@ -143,7 +144,7 @@ app.get('/show-next-stops',(req,res)=>{
 	.then((resp)=>{
 		res.render('show-next-stops.hbs',{
 			routeSelected: routeSelected,
-			stopSelected: stopSelected,
+			stopSelected: stopName,
 			displayedTimes: JSON.parse(resp).items
 		})
 	})
