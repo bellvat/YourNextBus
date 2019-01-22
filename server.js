@@ -1,12 +1,17 @@
 
 const express = require('express');
 const hbs = require('hbs');
+
 const mongoose = require('mongoose');
 const {Bus} = require('./model/bus-store.js');
+
+const functions = require('./server-support/functions.js');
+
 const request = require('request');
 const requestPromise = require('request-promise');
 const bodyParser = require('body-parser');
 const convert = require('xml-js');
+
 const NodeCache = require('node-cache');
 const myCache = new NodeCache();
 
@@ -19,37 +24,6 @@ hbs.registerHelper('json',(index)=>{
 	return JSON.stringify(obj);
 })
 
-function parseReq(req,key){
-	return req.query[key];
-}
-function buildStopsObj(routeDetailsJs){
-	//map the stop tag number to the stop name
-	var allStops = routeDetailsJs.body.route.stop;
-	var stopsObj = {};
-	for(var i = 0;i < allStops.length;i++){
-		stopsObj[allStops[i]._attributes.tag] = allStops[i];
-	}
-	return stopsObj;
-}
-function buildStopArray(routeDetailsJs,tagStopArray){
-	var stopsTagToNameObj = buildStopsObj(routeDetailsJs);
-	var arr = [];
-	
-	for(var i = 0;i < tagStopArray.length;i++){
-		//make a list of stop names and ids here, instead of doing that in the views
-		//if('stopId' in stopsTagToNameObj[tagStopsArray[i]._attributes.tag]._attributes){ 
-			var each = {
-			"stop_num" : stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.stopId,
-			 "stop_name" : stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.title
-			}
-			var stopsJson = {};
-			stopsJson.json = JSON.stringify(each);
-			stopsJson.name = stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.title;
-			arr.push(stopsJson);
-		//}
-	}
-	return arr;
-}
 
 //home i want to be able to submit the route and direction, then send the user to the /stops page
 app.get('/home',(req,res)=>{
@@ -61,31 +35,18 @@ app.get('/home',(req,res)=>{
 			})
 });
 app.get('/direction',(req,res)=>{
-	var routeSelected = parseReq(req,'route_selected');
-
+	var routeSelected = functions.parseReq(req,'route_selected');
 	myCache.set('routeKey',routeSelected);
 	requestPromise({
 		uri: "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=lametro&r=" + routeSelected + "&terse"})
 		.then((resp)=>{
 			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
 			var directionArray = routeStopDetailJs.body.route.direction;
-			var directionJson = [];
-			for(var i = 0;i< directionArray.length;i++){
-				var b = {
-					"direction_num": i.toString(),
-					"direction_name": directionArray[i]._attributes.title
-				}
-				var directionArr = {};
-				directionArr.json = JSON.stringify(b);
-				directionArr.name = directionArray[i]._attributes.title;
-				directionJson.push(directionArr);
-				
-			}
+			var directionArr = functions.buildDirectionJson(directionArray);
 			
 			res.render('direction.hbs',{
 				routeSelected: routeSelected,
-				directions:directionJson, 
-				directionArray: directionArray
+				directions:directionArr, 
 			})
 		})
 		.catch((err)=>{
@@ -101,15 +62,16 @@ app.get('/stops',(req,res)=>{
 			return value;
 		}
 	});
-	var directionSelectedNum = parseInt(JSON.parse(parseReq(req,"direction_selected")).direction_num);
-	var directionSelectedName = JSON.parse(parseReq(req,"direction_selected")).direction_name;
+	var directionSelectedNum = parseInt(JSON.parse(functions.parseReq(req,"direction_selected")).direction_num);
+	var directionSelectedName = JSON.parse(functions.parseReq(req,"direction_selected")).direction_name;
+	myCache.set('directionKey', directionSelectedName);
 
 	requestPromise({
 		uri: "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=lametro&r=" + routeSelected + "&terse"})
 		.then((resp)=>{
 			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
 			var tagStopsArray = routeStopDetailJs.body.route.direction[directionSelectedNum].stop;
-			var stopsList = buildStopArray(routeStopDetailJs,tagStopsArray);
+			var stopsList = functions.buildStopArray(routeStopDetailJs,tagStopsArray);
 			res.render('stops.hbs',{
 				routeSelected: routeSelected,
 				directionSelected: directionSelectedName,
@@ -122,9 +84,14 @@ app.get('/stops',(req,res)=>{
 });
 
 app.get('/show-next-stops',(req,res)=>{
-	var stopSelected = JSON.parse(parseReq(req,"stop_selected")).stop_num;
-	var stopName = JSON.parse(parseReq(req,"stop_selected")).stop_name;
+	var stopSelected = JSON.parse(functions.parseReq(req,"stop_selected")).stop_num;
+	var stopName = JSON.parse(functions.parseReq(req,"stop_selected")).stop_name;
 	var routeSelected = myCache.get('routeKey',(err,value)=>{
+		if(!err){
+			return value;
+		}
+	})
+	var directionSelected = myCache.get('directionKey',(err,value)=>{
 		if(!err){
 			return value;
 		}
@@ -135,6 +102,7 @@ app.get('/show-next-stops',(req,res)=>{
 	.then((resp)=>{
 		res.render('show-next-stops.hbs',{
 			routeSelected: routeSelected,
+			directionSelected: directionSelected,
 			stopSelected: stopName,
 			displayedTimes: JSON.parse(resp).items
 		})
