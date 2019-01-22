@@ -39,10 +39,13 @@ function buildStopArray(routeDetailsJs,tagStopArray){
 		//make a list of stop names and ids here, instead of doing that in the views
 		//if('stopId' in stopsTagToNameObj[tagStopsArray[i]._attributes.tag]._attributes){ 
 			var each = {
-			'stopId' : stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.stopId,
-			 'stopTitle' : stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.title
+			"stop_num" : stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.stopId,
+			 "stop_name" : stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.title
 			}
-			arr.push(each);
+			var stopsJson = {};
+			stopsJson.json = JSON.stringify(each);
+			stopsJson.name = stopsTagToNameObj[tagStopArray[i]._attributes.tag]._attributes.title;
+			arr.push(stopsJson);
 		//}
 	}
 	return arr;
@@ -107,22 +110,10 @@ app.get('/stops',(req,res)=>{
 			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
 			var tagStopsArray = routeStopDetailJs.body.route.direction[directionSelectedNum].stop;
 			var stopsList = buildStopArray(routeStopDetailJs,tagStopsArray);
-			var stopsArray = [];
-			for(var i = 0;i< stopsList.length;i++){
-				var b = {
-					"stop_num": stopsList[i].stopId,
-					"stop_name": stopsList[i].stopTitle
-				}
-				var stopsJson = {};
-				stopsJson.json = JSON.stringify(b);
-				stopsJson.name = stopsList[i].stopTitle;
-				stopsArray.push(stopsJson);
-				
-			}
 			res.render('stops.hbs',{
 				routeSelected: routeSelected,
 				directionSelected: directionSelectedName,
-				stopsList:stopsArray 
+				stopsList:stopsList 
 			})
 		})
 		.catch((err)=>{
