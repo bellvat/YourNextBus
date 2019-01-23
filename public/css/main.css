@@ -1,0 +1,7 @@
+h1{
+	color:red;
+}
+.container{
+	display:flex;
+	justify-content:center;
+}

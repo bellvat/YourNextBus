@@ -14,16 +14,14 @@ const convert = require('xml-js');
 
 const NodeCache = require('node-cache');
 const myCache = new NodeCache();
+const path = require('path');
 
 var app = express()
 
 app.set('view engine','hbs');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
-hbs.registerHelper('json',(index)=>{
-	var obj = { keyOne: index + 1, keyTwo: this._attributes.title };
-	return JSON.stringify(obj);
-})
-
+hbs.registerPartials(__dirname + '/views/partials');
 
 //home i want to be able to submit the route and direction, then send the user to the /stops page
 app.get('/home',(req,res)=>{
