@@ -1,16 +1,18 @@
 <html>
+{{>header}}
 <body>
-	<h1>Find Your Next Bus!</h1>
-	<p>Please select your route below</p>
-	<p>Serving LA area, specifically LA Metro</p>
+	<p>Please select your direction below</p>
 	<h2>Route: {{routeSelected}}</h2>
 	<h2>Directions</h2>
 	<form method="get" action="/stops">
+		{{#directions}}
 		<select name="direction_selected">
-		{{#each directions}}
 			<option value='{{this.json}}'>{{this.name}}</option>
-		{{/each}}
 		</select>
+			{{#stopsName}}
+				<p>{{name}}</p>
+			{{/stopsName}}
+		{{/directions}}
 		<button type="Submit" name="submitDirection" value="Submit">Submit Direction</button> 
 	</form>
 </body>

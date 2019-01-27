@@ -40,7 +40,7 @@ app.get('/direction',(req,res)=>{
 		.then((resp)=>{
 			var routeStopDetailJs = JSON.parse(convert.xml2json(resp,{compact:true}));
 			var directionArray = routeStopDetailJs.body.route.direction;
-			var directionArr = functions.buildDirectionJson(directionArray);
+			var directionArr = functions.buildDirectionJson(directionArray,routeStopDetailJs);
 			
 			res.render('direction.hbs',{
 				routeSelected: routeSelected,
