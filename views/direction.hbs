@@ -4,18 +4,18 @@
 	<p>Please select your direction below</p>
 	<h2>Route: {{routeSelected}}</h2>
 	<h2>Directions</h2>
-	<form method="get" action="/stops">
 		{{#directions}}
+              <form method="get" action="/stops">
 		<select name="direction_selected">
 			<option value='{{this.json}}'>{{this.name}}</option>
 		</select>
+		<button type="Submit" name="submitDirection" value="Submit">Submit Direction</button> 
                         <ul class="contain-stop">
 			{{#stopsName}}
                               <li>{{name}}</li>
 			{{/stopsName}}
                         </ul>
+              </form>
 		{{/directions}}
-		<button type="Submit" name="submitDirection" value="Submit">Submit Direction</button> 
-	</form>
 </body>
 </html>
