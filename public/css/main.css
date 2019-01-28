@@ -4,4 +4,21 @@ h1{
 .container{
 	text-align:center;
 }
+.contain-stop{
+  display:flex;
+  flex-direction: row;
+  list-style-type:none;
+  white-space:nowrap;
+  width:50%;
+  overflow:scroll;
+  border:1pt solid blue;
+  height:40px;
+  list-style-position:outside;
+}
 
+.contain-stop li:before{
+  content:'\2192';
+}
+.contain-stop li{
+  margin-right:8px;
+}

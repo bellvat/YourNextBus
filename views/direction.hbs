@@ -9,9 +9,11 @@
 		<select name="direction_selected">
 			<option value='{{this.json}}'>{{this.name}}</option>
 		</select>
+                        <ul class="contain-stop">
 			{{#stopsName}}
-				<p>{{name}}</p>
+                              <li>{{name}}</li>
 			{{/stopsName}}
+                        </ul>
 		{{/directions}}
 		<button type="Submit" name="submitDirection" value="Submit">Submit Direction</button> 
 	</form>
