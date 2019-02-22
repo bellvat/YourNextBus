@@ -1,11 +1,11 @@
 <html>
 {{>header}}
 <body>
-	<h2>Your Route: {{routeSelected}}</h2>
-	<h2>Your Direction: {{directionSelected}}</h2>
-	<h2>Your Stop: {{stopSelected}}</h2>
+	<h3>Your Route: {{routeSelected}}</h3>
+	<h3>Your Direction: {{directionSelected}}</h3>
+	<h3>Your Stop: {{stopSelected}}</h3>
 	{{#each displayedTimes}}
-	<p>Minutes: {{this.minutes}}</p>
+	<h2>Minutes: {{this.minutes}}</h2>
 	{{/each}}
 </body>
 </html>

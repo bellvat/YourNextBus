@@ -1,9 +1,9 @@
 <html>
 {{>header}}
 <body>
-	<p>Please select your direction below</p>
 	<h2>Route: {{routeSelected}}</h2>
 	<h2>Directions</h2>
+	<p>Please select your direction below</p>
 		{{#directions}}
               <form method="get" action="/stops">
 		<select name="direction_selected">
@@ -12,10 +12,11 @@
 		<button type="Submit" name="submitDirection" value="Submit">Submit Direction</button> 
                         <ul class="contain-stop">
 			{{#stopsName}}
-                              <li>{{name}}</li>
+                              <li> {{name}}</li>
 			{{/stopsName}}
                         </ul>
               </form>
+              </br>
 		{{/directions}}
 </body>
 </html>

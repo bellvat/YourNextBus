@@ -1,5 +1,5 @@
 h1{
-	color:blue;
+	color:cadetblue;
 }
 .container{
 	text-align:center;
@@ -9,9 +9,9 @@ h1{
   flex-direction: row;
   list-style-type:none;
   white-space:nowrap;
-  width:50%;
+  width:80%;
   overflow:scroll;
-  border:1pt solid blue;
+  border:1pt solid black;
   height:40px;
   list-style-position:outside;
 }
@@ -21,4 +21,22 @@ h1{
 }
 .contain-stop li{
   margin-right:8px;
+}
+
+button{
+  font-size:16px
+}
+select{
+  font-size:18px
+}
+
+button{
+  border: solid green 3px;
+  background-color:green;
+  border-radius: 5px;
+  color:white;
+}
+
+body{
+  font-family: Arial, Helvetica, sans-serif;
 }
